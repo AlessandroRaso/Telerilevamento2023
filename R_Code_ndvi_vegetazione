@@ -1,0 +1,32 @@
+library(raster)
+setwd("C:/LAB/")
+l1992 <- brick("defor1_.png")
+l2006 <- brick("defor2_.png")
+
+# Range DVI (8 bit): -255 a 255
+# Range DVI (16 bit): -65535 a 65535
+# Range NDVI (8 bit): -1 a 1
+# Range NDVI (16 bit): -1 a 1
+# quindi, NDVI può essere utilizzato per confrontare immagini con una diversa RISOLUZIONE RADIOMETRICA
+
+
+dvi1992 = l1992[[1]] - l1992[[2]]
+ndvi1992 = dvi1992 / (l1992[[1]] + l1992[[2]])
+cl <- colorRampPalette(c('blue','white','red'))(100)
+plot(ndvi1992, col=cl)
+
+par(mfrow=c(2,1))
+plotRGB(l1992, r=1, g=2, b=3, stretch="lin")
+plot(ndvi1992, col=cl)
+dev.off()
+
+dvi2006 = l2006[[1]] - l2006[[2]]
+ndvi2006 = dvi2006 / (l2006[[1]] + l2006[[2]])
+plot(ndvi2006, col=cl)
+
+
+par(mfrow=c(2,1))
+plot(ndvi1992, col=cl)
+plot(ndvi2006, col=cl)
+dev.off()
+
