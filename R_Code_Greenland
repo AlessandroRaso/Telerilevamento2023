@@ -18,11 +18,50 @@ plot(lst_2005)
 plot(lst_2010)
 plot(lst_2015)
 
-# creare una lista di ogetti
+# per creare una lista di ogetti si usa la funzione "list.files"
 rlist <- list.files(pattern="lst")
 rlist
 
-# lapply= serve per importare tutte le immagini
+# per importare tutte le immagini si usa la funzione "lapply"
 # applicare una funzione raster su una lista di ogetti
 import <- lapply(rlist,raster)
 import
+
+# per generare un immagine satellitare singola con 4 bande si usa la funzione "stack", con il paccheto "terra" si usa la funzione "c:"
+TGr <- stack(import)
+TGr
+plot(TGr)
+
+# per avere un effetto di più bande che si montano insieme possiamo fare vari montaggi tramite la funzione "plotRGB" 
+# dove il risultato ci mostra in base al colore associato alla relativa immagine dov'è che la temperatura è più alta. 
+
+plotRGB(TGr, 1, 2, 3, stretch="Lin")  #dove ci sara il rosso allora si riferisce all'immagine 1 (2000), verde per l'immagine 2(2005) e blu immagine 3(2010)
+plotRGB(TGr, 2, 3, 4, stretch="Lin")
+plotRGB(TGr, 4, 3, 2, stretch="Lin")
+
+# per giocare con le differenze
+dift <- TGr[[2]] - TGr[[1]]
+plot(dift)
+
+# per giocare con le colorazioni del plot
+cl <- colorRampPalette(c("blue","light blue","pink","red"))(100)
+plot(TGr, col=cl)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
