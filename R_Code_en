@@ -1,0 +1,7 @@
+library(raaster)
+setwd("C:/lab/en")
+
+en01 <- raster("EN_0001.png")
+
+cl <- colorRampPalette(c('red','orange','yellow'))(100) #
+plot(en01, col=cl)
