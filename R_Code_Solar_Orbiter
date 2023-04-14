@@ -1,0 +1,38 @@
+library(raster)
+install.packages("RStoolbox")
+library(RStoolbox)
+
+setwd("C:/lab/")
+
+so <- brick("Solar_Orbiter_s_first_views_of_the_Sun_pillars.jpg")
+
+plotRGB(so, 1, 2, 3, stretch="lin")
+plotRGB(so, 1, 2, 3, stretch="hist")
+
+#1. funzione per ottenere i valori (Get Values)
+singlenr <- getValues(so)
+singlenr
+
+# 2. Classifcazione (non supervisionata)
+kcluster <- kmeans(singlenr, centers = 3)
+kcluster
+
+# 3. riconsegno i valori classificati attraverso la funzione "Set values"
+soclass <- setValues(so[[1]], kcluster$cluster)
+
+cl <- colorRampPalette(c('yellow','black','red'))(100)
+plot(soclass, col=cl)
+#dal risultato possiamo notare che:
+#alla classe 1 il classificatore ha assegnato il colore giallo per rappresentare il valore energetico più alto
+#alla classe 2 il classificatore ha assegnato il colore nero per rappresentare il valore energetico più basso
+#alla classe 3 il classificatore ha assegnato il colore rosso per rappresentare il valore energetico intermedio
+
+#funzione che calcola la frequenza dei valori delle classi "freq"
+frequencies <- freq(soclass)
+frequencies
+
+#vedere il totale dei pixel dal nome dell'immagine "soclass" e calcolare la frequenza in percentuale
+tot = 2221440
+percentages = frequencies * 100 /  tot
+percentages
+
