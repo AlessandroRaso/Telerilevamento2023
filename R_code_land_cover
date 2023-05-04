@@ -1,9 +1,9 @@
 
-library(raster)
 install.packages("ggplot2")
-library(ggplot2)
-
 install.packages("patchwork")
+
+library(raster)
+library(ggplot2)
 library(patchwork) # for multiframe ggplot plotting
 
 setwd("C:/lab/")
@@ -31,15 +31,15 @@ singlenr1
 set.seed(99) # Funzione che ti permetterebbe di ottenere gli stessi risultati
 
 # 2. Classificazione
-kcluster1 <- kmeans(singlenr1, centers = 3)
+kcluster1 <- kmeans(singlenr1, centers = 2)
 kcluster1
 
 # 3. Imposta i valori su un raster sulla base di:
 defor1class <- setValues(defor1[[1]], kcluster1$cluster) # Assegnare nuovi valori a un oggetto raster
 cl <- colorRampPalette(c('yellow','black','red'))(100)
 plot(defor1class, col=cl)
-# class 1: forest
-# class 2: agriculture
+# class 1: Foresta
+# class 2: Agricultura
 
 
 
@@ -50,15 +50,15 @@ singlenr2
 set.seed(99)
 
 # 2. Classificazione
-kcluster2 <- kmeans(singlenr2, centers = 3)
+kcluster2 <- kmeans(singlenr2, centers = 2)
 kcluster2
 
 # 3. Imposta i valori su un raster sulla base di:
 defor2class <- setValues(defor2[[1]], kcluster2$cluster) # Assegnare nuovi valori a un oggetto raster
 cl <- colorRampPalette(c('yellow','black','red'))(100)
 plot(defor2class, col=cl)
-# class 1: forest
-# class 2: agriculture
+# class 1: Foresta
+# class 2: Agricultura
 
 
 # Frequenza
@@ -67,21 +67,21 @@ frequencies1 <- freq(defor1class)
 tot1 = ncell(defor1class)
 percentages1 = frequencies1 * 100 /  tot1
 percentages1
-# percentuale foresta: ?????
-# percentuale agricultura: ?????
+# percentuale foresta: 89.74632
+# percentuale agricultura: 10.25368
 
 frequencies2 <- freq(defor2class)
 tot2 = ncell(defor2class)
 percentages2 = frequencies2 * 100 /  tot2
 percentages2
-# percentuale foresta: ?????
-# percentuale agricultura: ?????
+# percentuale foresta: 47.931
+# percentuale agricultura: 52.069
 
 
 # Costruire un dataframe
 cover <- c("Forest","Agriculture")
-percent_1992 <- c(???, ???)
-percent_2006 <- c(???, ???)
+percent_1992 <- c(89.74, 10.25)
+percent_2006 <- c(47.93, 52.06)
 
 percentages <- data.frame(cover, percent_1992, percent_2006)
 percentages
@@ -94,10 +94,12 @@ p1 <- ggplot(percentages, aes(x=cover, y=percent_1992, color=cover)) + geom_bar(
 p2 <- ggplot(percentages, aes(x=cover, y=percent_2006, color=cover)) + geom_bar(stat="identity", fill="white")
 p1+p2
 
-# stessi limiti percentuali!
+# stessi limiti espressi in percentuali!
 p1 <- ggplot(percentages, aes(x=cover, y=percent_1992, color=cover)) + geom_bar(stat="identity", fill="white") + ylim(c(0,100))
 p2 <- ggplot(percentages, aes(x=cover, y=percent_2006, color=cover)) + geom_bar(stat="identity", fill="white") + ylim(c(0,100))
 p1+p2
+
+dev.off()
 
 
 
