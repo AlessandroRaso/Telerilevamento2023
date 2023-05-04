@@ -1,0 +1,76 @@
+
+install.packages("viridis")
+
+library(raster)
+library(ggplot2)    # per plotting ggplot 
+library(RStoolbox)  # per la visualizzazione delle immagini e il calcolo della variabilità
+library(patchwork)  # multiframe con grafici ggplot2
+library(viridis)
+
+setwd("C:/lab/") 
+
+# Exercise: importare l'immagine "Ghiacciaio Similaun sentinel-2"
+sen <- brick("Ghiacciaio Similaun sentinel-2.png")
+# band1 = NIR
+# band2 = red
+# band3 = green
+
+# Exercise: tracciare l'immagine con la funzione ggRGB
+plotRGB(sen, 1, 2, 3, stretch="lin")
+
+# NIR sulla componente green
+plotRGB(sen, 2, 1, 3)
+
+# Calcolo della variabilità su NIR
+nir <- sen[[1]]
+sd3 <- focal(nir, matrix(1/9, 3, 3), fun=sd)
+clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100)
+plot(sd3, col=clsd)
+
+# tracciare con ggplot
+sd3d <- as.data.frame(sd3, xy=T)
+ggplot() + geom_raster(sd3d, mapping=aes(x=x, y=y, fill=layer))
+
+# tracciare con viridis
+ggplot() + geom_raster(sd3d, mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("Standard deviation by viridis package")
+
+# tracciare con cividis
+ggplot() + geom_raster(sd3d, mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "cividis") + ggtitle("Standard deviation by viridis package")
+
+# tracciare con magma
+ggplot() + geom_raster(sd3d, mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "magma") + ggtitle("Standard deviation by viridis package")
+
+# tracciare con inferno
+ggplot() + geom_raster(sd3d, mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "inferno") + ggtitle("Standard deviation by viridis package")
+
+# patchwork
+p1 <- ggplot() + geom_raster(sd3d, mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("Standard deviation by viridis package")
+p2 <- ggplot() + geom_raster(sd3d, mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "inferno") + ggtitle("Standard deviation by viridis package")
+p1 + p2
+
+
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
