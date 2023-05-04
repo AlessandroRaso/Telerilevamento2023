@@ -1,0 +1,11 @@
+
+library(raster)
+library(ggplot2)
+
+setwd("C:/lab/")
+
+sen <- brick("Ghiacciaio Similaun sentinel-2.png")
+sen
+plot(sen)
+
+
