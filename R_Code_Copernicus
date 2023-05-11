@@ -10,13 +10,11 @@ setwd("C:/Lab/")
 
 # Scaricare da Copernicus i dati richiesti --> https://land.copernicus.vgt.vito.be/PDF/portal/Application.html
 # Caricarli su R per visualizzarli
-ssoil <- raster("C:/LAB/c_gls_SSM1km_202305090000_CEURO_S1CSAR_V1.2.1.nc")
-ssoil
-plot(ssoil)
+sc <- raster("C:/LAB/c_gls_SSM1km_202305090000_CEURO_S1CSAR_V1.2.1.nc")
+sc
+plot(sc)
 
-ggplot() + geom_raster(ssoil, mapping=aes(x=x, y=y, fill=Surface.Soil.Moisture))
+ggplot() + geom_raster(sc, mapping=aes(x=x, y=y, fill=Surface.Soil.Moisture))
 
 # with viridis
-ggplot() +
-geom_raster(ssoil, mapping=aes(x=x, y=y, fill=Surface.Soil.Moisture)) +
-scale_fill_viridis(option="magma")
+ggplot() + geom_raster(ssoil, mapping=aes(x=x, y=y, fill=Surface.Soil.Moisture)) + scale_fill_viridis(option="magma")
