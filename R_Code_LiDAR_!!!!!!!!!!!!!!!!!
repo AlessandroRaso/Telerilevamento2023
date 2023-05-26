@@ -1,0 +1,37 @@
+
+# Carica i pacchetti necessari
+library(raster) #"Analisi e modellazione dei dati geografici"
+library(rgdal) #"Libreria di astrazione di dati geospaziali"
+library(viridis)
+library(ggplot2)
+
+setwd("C:/LAB/Dati LiDAR")
+
+# carica DSM 2013
+dsm_2013 <- raster("C:/LAB/Dati LiDAR/2013Elevation_DigitalElevationModel-0.5m")
+# visualizzare le informazioni sul raster.
+dsm_2013
+# plot the DSM 2013
+plot(dsm_2013, main="Lidar Digital Surface Model DSM 2013")
+
+# carica DTM 2013
+dtm_2013 <- raster("C:/LAB/Dati LiDAR/2013Elevation_DigitalTerrainModel-0.5m.tif")
+plot(dtm_2013, main="Lidar Digital Terrain Model DTM 2013")
+
+# creare CHM 2013 come differenza tra DSM e DTM
+chm_2013 <- dsm_2013 - dtm_2013
+# visualizzare gli attributi CHM
+chm_2013
+
+chm_2013d <- as.data.frame(chm_2013, xy=T)
+
+ggplot() + geom_raster(chm_2013d, mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis() +
+  ggtitle("CHM 2013")
+#salva CHM sul computer
+writeRaster(chm_2013d,"chm_2013.tif")
+
+
+
+
+
+
