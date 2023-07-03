@@ -56,6 +56,9 @@ points(species[species$Occurrence == 1,], pch=16)
 # model
 
 # impostare i dati per "sdm"
+library(mgcv)
+library(nlme)
+library(rpart)
 datasdm <- sdmData(train=species, predictors=preds)
 
 # model
