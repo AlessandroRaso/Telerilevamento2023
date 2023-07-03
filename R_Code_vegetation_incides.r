@@ -1,6 +1,6 @@
 #calculation spectral indices
 
-libray(raster)
+library(raster)
 setwd("C:/LAB/")
 
 l1992 <- brick("defor1_.png")
