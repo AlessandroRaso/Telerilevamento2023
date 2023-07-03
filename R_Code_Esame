@@ -1,8 +1,21 @@
 library(raster)
 setwd("C:/LAB/ESAME/")
 
-Raster2013 <- brick("LC08_L2SP_190031_20130618_20200912_02_T1_SR_B5.tif")
-Raster2023 <- brick("LC09_L2SP_190031_20230622_20230624_02_T1_SR_B5.tif")
+Raster2013 <- raster("LC08_L2SP_190031_20130618_20200912_02_T1_SR_B5.tif")
+Raster2023 <- raster("LC08_L2SP_190031_20230529_20230607_02_T1_SR_B5.tif")
+
+par(mfrow=c(2,1))
+plot(Raster2013)
+plot(Raster2023)
+
+
+
+
+
+
+
+
+
 
 # Range DVI (8 bit): -255 a 255
 # Range DVI (16 bit): -65535 a 65535
