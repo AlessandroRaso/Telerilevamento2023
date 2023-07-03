@@ -8,6 +8,9 @@ par(mfrow=c(1,2))
 plot(Raster2013, main="infrarosso 2013")
 plot(Raster2023, main="infrarosso 2023")
 
+Differenza <- 
+ggplot() + geom_raster(chm_2013d, mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("CHM 2013 San Genesio/Jenesien")
+
 
 
 
