@@ -4,9 +4,9 @@ setwd("C:/LAB/ESAME/")
 Raster2013 <- raster("LC08_L2SP_190031_20130618_20200912_02_T1_SR_B5.tif")
 Raster2023 <- raster("LC08_L2SP_190031_20230529_20230607_02_T1_SR_B5.tif")
 
-par(mfrow=c(2,1))
-plot(Raster2013, main)
-plot(Raster2023, main)
+par(mfrow=c(1,2))
+plot(Raster2013, main="infrarosso 2013")
+plot(Raster2023, main="infrarosso 2023")
 
 
 
