@@ -1,1 +1,33 @@
+library(raster)
+setwd("C:/LAB/ESAME/")
+
+Raster2013 <- brick("LC08_L2SP_190031_20130618_20200912_02_T1_SR_B5.tif")
+Raster2023 <- brick("LC09_L2SP_190031_20230622_20230624_02_T1_SR_B5.tif")
+
+# Range DVI (8 bit): -255 a 255
+# Range DVI (16 bit): -65535 a 65535
+# Range NDVI (8 bit): -1 a 1
+# Range NDVI (16 bit): -1 a 1
+# quindi, NDVI può essere utilizzato per confrontare immagini con una diversa RISOLUZIONE RADIOMETRICA
+
+
+dvi2013 = Raster2013[[1]] - Raster2013[[2]]
+ndvi2013 = dvi2013 / (Raster2013[[1]] + Raster2013[[2]])
+cl <- colorRampPalette(c('blue','white','red'))(100)
+plot(ndvi2013, col=cl)
+
+par(mfrow=c(2,1))
+plotRGB(Raster2013, r=1, g=2, b=3, stretch="lin")
+plot(ndvi2013, col=cl)
+dev.off()
+
+dvi2023 = Raster2023[[1]] - Raster2023[[2]]
+ndvi2023 = dvi2023 / (Raster2023[[1]] + Raster2023[[2]])
+plot(ndvi2023, col=cl)
+
+
+par(mfrow=c(2,1))
+plot(ndvi2013, col=cl)
+plot(ndvi2023, col=cl)
+dev.off()
 
