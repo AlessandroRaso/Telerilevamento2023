@@ -17,4 +17,4 @@ plot(sc)
 ggplot() + geom_raster(sc, mapping=aes(x=x, y=y, fill=Surface.Soil.Moisture))
 
 # with viridis
-ggplot() + geom_raster(ssoil, mapping=aes(x=x, y=y, fill=Surface.Soil.Moisture)) + scale_fill_viridis(option="magma")
+ggplot() + geom_raster(sc, mapping=aes(x=x, y=y, fill=Surface.Soil.Moisture)) + scale_fill_viridis(option="magma")
