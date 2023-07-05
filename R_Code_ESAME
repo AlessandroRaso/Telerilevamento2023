@@ -1,54 +1,64 @@
-library(raster)
-setwd("C:/LAB/ESAME/")
+library(raster) # "Analisi e modellazione dei dati geografici"
 
-Raster2013 <- raster("LC08_L2SP_190031_20130618_20200912_02_T1_SR_B5.tif")
-Raster2023 <- raster("LC08_L2SP_190031_20230529_20230607_02_T1_SR_B5.tif")
+setwd("C:/LAb/ESAME/")
+
+SubsetB5_2013 <- raster("SubsetB5_2013.tif")
+SubsetB5_2023 <- raster("SubsetB5_2023.tif")
+SubsetB5_2013
+SubsetB5_2023
+RGB_2013<- brick("C:/LAB/ESAME/SubsetRGB2013.tif")
+RGB_2023<- brick("C:/LAB/ESAME/SubsetRGB2023.tif")
+RGB_2013
+RGB_2023
+
+# per importare tutte le bande
+addLayer(RGB_2013,SubsetB5_2013)
+layer_2013<-addLayer(RGB_2013,SubsetB5_2013)
+plot(layer_2013, main="RGB + Infrarosso vicino anno 2013")
+
+addLayer(RGB_2023,SubsetB5_2023)
+layer_2023<-addLayer(RGB_2023,SubsetB5_2023)
+plot(layer_2023, main="RGB + Infrarosso vicino anno 2023")
+
+
+# per avere un effetto di più bande che si montano insieme possiamo fare vari montaggi tramite la funzione "plotRGB" 
+# dove il risultato ci mostra in base al colore associato alla relativa immagine dov'è che la temperatura è più alta.
+par(mfrow=c(2,1))
+plotRGB(layer_2013, r=1, g=5, b=3, stretch="lin")
+plotRGB(layer_2023, r=1, g=5, b=3, stretch="lin")
+dev.off()
+
+
+Ndvi_2013 = ((layer_2013[[4]]-layer_2013[[5]]) / (layer_2013[[4]]+layer_2013[[5]]))
+#Ndvi_2013 - non eseguo in quanto elenco lungo
+
+Ndvi_2023 = ((layer_2023[[4]]-layer_2023[[5]]) / (layer_2023[[4]]+layer_2023[[5]]))
+#Ndvi_2023 - non eseguo in quanto elenco lungo
 
 par(mfrow=c(1,2))
-plot(Raster2013, main="infrarosso 2013")
-plot(Raster2023, main="infrarosso 2023")
-
-Differenza <- Raster2013 - Raster2023
-Differenza
-Differenza2 <- as.data.frame(Differenza, xy=T)
-Differenza2
-ggplot() + geom_raster(Differenza2, mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("Differenza dal 2013 al 2023")
-
-
-
-
-
-
-
-
-
-
-
-
-# Range DVI (8 bit): -255 a 255
-# Range DVI (16 bit): -65535 a 65535
-# Range NDVI (8 bit): -1 a 1
-# Range NDVI (16 bit): -1 a 1
-# quindi, NDVI può essere utilizzato per confrontare immagini con una diversa RISOLUZIONE RADIOMETRICA
-
-
-dvi2013 = Raster2013[[1]] - Raster2013[[2]]
-ndvi2013 = dvi2013 / (Raster2013[[1]] + Raster2013[[2]])
-cl <- colorRampPalette(c('blue','white','red'))(100)
-plot(ndvi2013, col=cl)
-
-par(mfrow=c(2,1))
-plotRGB(Raster2013, r=1, g=2, b=3, stretch="lin")
-plot(ndvi2013, col=cl)
+plot(Ndvi_2013, main="Ndvi del 2013")
+plot(Ndvi_2023, main="Ndvi del 2023")
 dev.off()
 
-dvi2023 = Raster2023[[1]] - Raster2023[[2]]
-ndvi2023 = dvi2023 / (Raster2023[[1]] + Raster2023[[2]])
-plot(ndvi2023, col=cl)
+# per giocare con le colorazioni del plot
+cl <- colorRampPalette(c('white','red','blue'))(100)
+plot(Ndvi_2013, col=cl)
+plot(Ndvi_2023, col=cl)
 
 
-par(mfrow=c(2,1))
-plot(ndvi2013, col=cl)
-plot(ndvi2023, col=cl)
-dev.off()
+diffNdvi = (Ndvi_2023 - Ndvi_2013)
+plot(diffNdvi)
 
+
+
+
+
+library(ggplot2)
+library(patchwork) # for multiframe ggplot plotting
+library(viridis)
+
+#assegno con questa funzione un tipo particolare di lista che viene utilizzata per rappresentare degli insiemi di dati.
+diffNdvi2 <- as.data.frame(diffNdvi, xy=T)
+
+#funzione che crea un sistema di coordinate a cui è possibile aggiungere dei livelli
+ggplot() + geom_raster(diffNdvi,mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("Differenza Ndvi dal 2013 al 2023")
