@@ -1,3 +1,10 @@
+# ANALISI TEMPORALE DELLA COPERTURA DEL SUOLO DEL PARAGGIO COSTIERO NEL SUD PONTINO 
+# INTRODUZIONE
+# DATI LANDSAT 8
+# INDICE DI VEGETAZIOE NDVI
+# CLASSIFICAZIONE NON SUPERVISIONATA
+
+
 library(raster) # "Analisi e modellazione dei dati geografici"
 
 setwd("C:/LAb/ESAME/")
@@ -51,14 +58,117 @@ plot(diffNdvi)
 
 
 
-
-
+library(raster)
 library(ggplot2)
 library(patchwork) # for multiframe ggplot plotting
-library(viridis)
 
-#assegno con questa funzione un tipo particolare di lista che viene utilizzata per rappresentare degli insiemi di dati.
-diffNdvi2 <- as.data.frame(diffNdvi, xy=T)
+setwd("C:/LAb/ESAME/")
+# LANDSAT= NIR 5, RED 4, GREEN 3, BLUE 2
 
-#funzione che crea un sistema di coordinate a cui è possibile aggiungere dei livelli
-ggplot() + geom_raster(diffNdvi,mapping =aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("Differenza Ndvi dal 2013 al 2023")
+RGB_2013<- brick("C:/LAB/ESAME/SubsetRGB2013.tif")
+RGB_2023<- brick("C:/LAB/ESAME/SubsetRGB2023.tif")
+
+
+# classificazione non supervisionata
+
+#RGB_2013
+# 1. funzione per ottenere tutti i singoli valori (Get Values)
+singlenr1 <- getValues(RGB_2013)
+#singlenr1 - non lo eseguo perchè elelnco lungo 
+
+set.seed(99) # Funzione che ti permetterebbe di ottenere gli stessi risultati
+
+# 2. Classificazione
+kcluster1 <- kmeans(singlenr1, centers = 4)
+# kcluster1 - non lo eseguo perchè elelnco lungo 
+
+# 3. Imposta i valori su un raster sulla base di:
+RGB_2013_class <- setValues(RGB_2013[[1]], kcluster1$cluster) # Assegnare nuovi valori a un oggetto raste, riconsegno i valori classificati attraverso la funzione "Set values"
+cl <- colorRampPalette(c('blue','green','white','brown'))(100)
+plot(RGB_2013_class,col=cl)
+# class 1: Mare
+# class 2: Vegetazione
+# class 3: Mare Profondo
+# class 4: Suolo
+
+par(mfrow=c(1,2))
+plotRGB(RGB_2013)
+plot(RGB_2013_class,col=cl)
+dev.off()
+
+
+
+#RGB_2023
+# 1. Ottenere tutti i singoli valori
+singlenr2 <- getValues(RGB_2023)
+#singlenr2 - non lo eseguo perchè elelnco lungo 
+set.seed(99)
+
+# 2. Classificazione
+kcluster2 <- kmeans(singlenr2, centers = 4)
+#kcluster2 - non lo eseguo perchè elelnco lungo 
+
+# 3. Imposta i valori su un raster sulla base di:
+RGB_2023_class <- setValues(RGB_2023[[1]], kcluster2$cluster) # Assegnare nuovi valori a un oggetto raster
+cl <- colorRampPalette(c('blue','green','white','brown'))(100)
+plot(RGB_2023_class,col=cl)
+# class 1: Mare
+# class 2: Vegetazione
+# class 3: Mare Profondo
+# class 4: Suolo
+
+
+par(mfrow=c(1,2))
+plotRGB(RGB_2023)
+plot(RGB_2023_class,col=cl)
+dev.off()
+
+par(mfrow=c(1,2))
+plot(RGB_2013_class,col=cl, main="RGB_2013_class")
+plot(RGB_2023_class,col=cl, main="RGB_2023_class")
+
+
+# Frequenza
+# funzione che calcola la frequenza dei valori delle classi "freq"
+frequencies1 <- freq(RGB_2013_class)
+# funzione che vede il totale dei pixel dell'immagine
+tot1 = ncell(RGB_2013_class)
+percentages1 = frequencies1 * 100 /  tot1
+percentages1
+# percentuale Mare: 29.84090
+# percentuale Vegetazione: 28.92892
+# percentuale Mare Profondo: 18.46407
+# percentuale Suolo: 22.76611
+
+frequencies2 <- freq(RGB_2023_class)
+tot2 = ncell(RGB_2023_class)
+percentages2 = frequencies2 * 100 /  tot2
+percentages2
+# percentuale Mare: 16.28425
+# percentuale Vegetazione: 40.85569
+# percentuale Mare Profondo: 32.26851 
+# percentuale Suolo: 10.59156
+
+
+# Costruire un dataframe
+cover <- c("Mare","Vegetazione","Suolo")
+percent_2013 <- c(48.3, 28.93, 22.77) 
+percent_2023 <- c(48.55, 40.85, 10.59) 
+
+percentages <- data.frame(cover, percent_2013, percent_2023)
+percentages
+
+# Disegniamoli!
+ggplot(percentages, aes(x=cover, y=percent_2013, color=cover)) + geom_bar(stat="identity", fill="white")
+ggplot(percentages, aes(x=cover, y=percent_2023, color=cover)) + geom_bar(stat="identity", fill="white")
+p1 <- ggplot(percentages, aes(x=cover, y=percent_2013, color=cover)) + geom_bar(stat="identity", fill="white")
+p2 <- ggplot(percentages, aes(x=cover, y=percent_2023, color=cover)) + geom_bar(stat="identity", fill="white")
+p1+p2
+
+
+# stessi limiti espressi in percentuali!
+p1 <- ggplot(percentages, aes(x=cover, y=percent_2013, color=cover)) + geom_bar(stat="identity", fill="white") + ylim(c(0,100))
+p2 <- ggplot(percentages, aes(x=cover, y=percent_2023, color=cover)) + geom_bar(stat="identity", fill="white") + ylim(c(0,100))
+p1+p2
+
+dev.off()
