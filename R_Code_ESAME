@@ -1,174 +1,124 @@
-# ANALISI TEMPORALE DELLA COPERTURA DEL SUOLO DEL PARAGGIO COSTIERO NEL SUD PONTINO 
-# INTRODUZIONE
-# DATI LANDSAT 8
-# INDICE DI VEGETAZIOE NDVI
-# CLASSIFICAZIONE NON SUPERVISIONATA
+library(raster) #Carico il paccheto per la lettura, l'Analisi e modellazione dei dati geografici
 
+setwd("C:/LAb/ESAME/") #Per impostare la working directory si usa la funzione “setwd” e successivamente il percorso della cartella di lavoro
 
-library(raster) # "Analisi e modellazione dei dati geografici"
-
-setwd("C:/LAb/ESAME/")
-
-SubsetB5_2013 <- raster("SubsetB5_2013.tif")
+SubsetB5_2013 <- raster("SubsetB5_2013.tif") #Per assegnare ad un vettore la banda B5 scaricata e creare un RasterLayer 
 SubsetB5_2023 <- raster("SubsetB5_2023.tif")
-SubsetB5_2013
-SubsetB5_2023
-RGB_2013<- brick("C:/LAB/ESAME/SubsetRGB2013.tif")
+SubsetB5_2013 ; SubsetB5_2023 #È possibile effettuare più istruzioni sulla stessa riga attraverso l’utilizzo del “;”.
+RGB_2013<- brick("C:/LAB/ESAME/SubsetRGB2013.tif") #Per assegnare ad un vettore l'immagine RGB scaricata ma nelle singole bande (4,3,2)
 RGB_2023<- brick("C:/LAB/ESAME/SubsetRGB2023.tif")
-RGB_2013
-RGB_2023
+RGB_2013 ; RGB_2023
 
-# per importare tutte le bande
-addLayer(RGB_2013,SubsetB5_2013)
-layer_2013<-addLayer(RGB_2013,SubsetB5_2013)
-plot(layer_2013, main="RGB + Infrarosso vicino anno 2013")
+addLayer(RGB_2013,SubsetB5_2013) # per unire tutte le bande in un singolo layer
+layer_2013<-addLayer(RGB_2013,SubsetB5_2013) #salvo come vettore tutte le bande precedentemente unite
+plot(layer_2013, main="RGB + Infrarosso vicino anno 2013") #funzione high-level per la grafica di base che ci permette di visualizzare il layer creato con un titolo di riferimento 
 
 addLayer(RGB_2023,SubsetB5_2023)
 layer_2023<-addLayer(RGB_2023,SubsetB5_2023)
 plot(layer_2023, main="RGB + Infrarosso vicino anno 2023")
 
-
-# per avere un effetto di più bande che si montano insieme possiamo fare vari montaggi tramite la funzione "plotRGB" 
-# dove il risultato ci mostra in base al colore associato alla relativa immagine dov'è che la temperatura è più alta.
-par(mfrow=c(2,1))
-plotRGB(layer_2013, r=1, g=5, b=3, stretch="lin")
-plotRGB(layer_2023, r=1, g=5, b=3, stretch="lin")
-dev.off()
+par(mfrow=c(2,1)) #Funzione che, all’interno della par() function, in un'unica area grafica consente di visualizzare 2 grafici in una matrice avente 2 righe e 1 colonna.
+plotRGB(layer_2013, r=1, g=5, b=3, stretch="lin") #Per avere un effetto di più bande che si uniscono possiamo fare vari montaggi tramite la funzione "plotRGB"
+plotRGB(layer_2023, r=1, g=5, b=3, stretch="lin") #Dove il risultato ci mostra in base al colore associato alla relativa immagine dov'è che la riflettanza è più alta.
+dev.off() #Funzione che consente di eliminare tutte le proprietà grafiche memorizzate compreso i plot.
 
 
-Ndvi_2013 = ((layer_2013[[4]]-layer_2013[[5]]) / (layer_2013[[4]]+layer_2013[[5]]))
+Ndvi_2013 = ((layer_2013[[4]]-layer_2013[[5]]) / (layer_2013[[4]]+layer_2013[[5]])) #calcolo del NDVI con una semplice formula= (NIR-RED)/(NIR+RED)
 #Ndvi_2013 - non eseguo in quanto elenco lungo
 
 Ndvi_2023 = ((layer_2023[[4]]-layer_2023[[5]]) / (layer_2023[[4]]+layer_2023[[5]]))
 #Ndvi_2023 - non eseguo in quanto elenco lungo
 
 par(mfrow=c(1,2))
-plot(Ndvi_2013, main="Ndvi del 2013")
-plot(Ndvi_2023, main="Ndvi del 2023")
+plot(Ndvi_2013, main="Ndvi del 2013") ; plot(Ndvi_2023, main="Ndvi del 2023")
 dev.off()
 
-# per giocare con le colorazioni del plot
-cl <- colorRampPalette(c('white','red','blue'))(100)
-plot(Ndvi_2013, col=cl)
-plot(Ndvi_2023, col=cl)
+cl <- colorRampPalette(c('white','red','blue'))(100) #Funzione che ci consente di giocare con le colorazioni del plot
+plot(Ndvi_2013, col=cl) ; plot(Ndvi_2023, col=cl)
 
-
-diffNdvi = (Ndvi_2023 - Ndvi_2013)
-plot(diffNdvi)
+diffNdvi = (Ndvi_2023 - Ndvi_2013) #operazione di calcolo per la differenza di Ndvi 2013/2023
+plot(diffNdvi, main="Differenza Ndvi tra 2013 e 2023")
 
 
 
 library(raster)
-library(ggplot2)
-library(patchwork) # for multiframe ggplot plotting
+library(ggplot2) #E' un pacchetto di visualizzazione dati, progettato per creare grafici personalizzabili di alta qualità, facili da interpretare e comprendere.
+library(patchwork) #E' un pacchetto avanzato di ggplo2 per i dati multiframe quindi per la composizione di grafici complessi
 
-setwd("C:/LAb/ESAME/")
-# LANDSAT= NIR 5, RED 4, GREEN 3, BLUE 2
+# Classificazione non supervisionata  #RGB_2013
+Singoli_Valori_RGB_2013 <- getValues(RGB_2013) # Funzione per ottenere tutti i singoli valori di una variabile
+#"Singoli_Valori_RGB_2013"  #Non lo eseguo perchè elenco lungo 
 
-RGB_2013<- brick("C:/LAB/ESAME/SubsetRGB2013.tif")
-RGB_2023<- brick("C:/LAB/ESAME/SubsetRGB2023.tif")
+set.seed(99) #Funzione che ti permette di ottenere gli stessi risultati evitando quindi risultati diversi ogni volta che si esegue la classificazione
 
+kcluster1 <- kmeans(Singoli_Valori_RGB_2013, centers = 4) #Classificazione non supervisionata con l'algoritmo K-meas, impostando 4 classi
+#kcluster1 #Non lo eseguo perchè elelnco lungo 
 
-# classificazione non supervisionata
-
-#RGB_2013
-# 1. funzione per ottenere tutti i singoli valori (Get Values)
-singlenr1 <- getValues(RGB_2013)
-#singlenr1 - non lo eseguo perchè elelnco lungo 
-
-set.seed(99) # Funzione che ti permetterebbe di ottenere gli stessi risultati
-
-# 2. Classificazione
-kcluster1 <- kmeans(singlenr1, centers = 4)
-# kcluster1 - non lo eseguo perchè elelnco lungo 
-
-# 3. Imposta i valori su un raster sulla base di:
-RGB_2013_class <- setValues(RGB_2013[[1]], kcluster1$cluster) # Assegnare nuovi valori a un oggetto raste, riconsegno i valori classificati attraverso la funzione "Set values"
+RGB_2013_class <- setValues(RGB_2013[[1]], kcluster1$cluster) #Funzione per assegnare i nuovi valori classificati ad un oggetto raster
 cl <- colorRampPalette(c('blue','green','white','brown'))(100)
-plot(RGB_2013_class,col=cl)
-# class 1: Mare
-# class 2: Vegetazione
-# class 3: Mare Profondo
-# class 4: Suolo
+plot(RGB_2013_class,col=cl)  # class 1: Mare  # class 2: Vegetazione  # class 3: Mare Profondo  # class 4: Suolo
 
 par(mfrow=c(1,2))
-plotRGB(RGB_2013)
-plot(RGB_2013_class,col=cl)
+plotRGB(RGB_2013) ; plot(RGB_2013_class,col=cl)
 dev.off()
 
+# Classificazione non supervisionata  #RGB_2023
+Singoli_Valori_RGB_2023 <- getValues(RGB_2023)
+#Singoli_Valori_RGB_2023 #Non lo eseguo perchè elelnco lungo 
 
-
-#RGB_2023
-# 1. Ottenere tutti i singoli valori
-singlenr2 <- getValues(RGB_2023)
-#singlenr2 - non lo eseguo perchè elelnco lungo 
 set.seed(99)
 
-# 2. Classificazione
-kcluster2 <- kmeans(singlenr2, centers = 4)
+kcluster2 <- kmeans(Singoli_Valori_RGB_2023, centers = 4)
 #kcluster2 - non lo eseguo perchè elelnco lungo 
 
-# 3. Imposta i valori su un raster sulla base di:
 RGB_2023_class <- setValues(RGB_2023[[1]], kcluster2$cluster) # Assegnare nuovi valori a un oggetto raster
 cl <- colorRampPalette(c('blue','green','white','brown'))(100)
 plot(RGB_2023_class,col=cl)
-# class 1: Mare
-# class 2: Vegetazione
-# class 3: Mare Profondo
-# class 4: Suolo
-
+# class 1: Mare   # class 2: Vegetazione  # class 3: Mare Profondo  # class 4: Suolo
 
 par(mfrow=c(1,2))
-plotRGB(RGB_2023)
-plot(RGB_2023_class,col=cl)
+plotRGB(RGB_2023) ; plot(RGB_2023_class,col=cl) 
 dev.off()
 
-par(mfrow=c(1,2))
-plot(RGB_2013_class,col=cl, main="RGB_2013_class")
-plot(RGB_2023_class,col=cl, main="RGB_2023_class")
+par(mfrow=c(1,2)) #eseguo entrambi i plot classificati in un unica visualizzazzione grafica
+plot(RGB_2013_class,col=cl, main="RGB_2013_class") ; plot(RGB_2023_class,col=cl, main="RGB_2023_class")
+dev.off()
 
 
-# Frequenza
-# funzione che calcola la frequenza dei valori delle classi "freq"
-frequencies1 <- freq(RGB_2013_class)
-# funzione che vede il totale dei pixel dell'immagine
-tot1 = ncell(RGB_2013_class)
-percentages1 = frequencies1 * 100 /  tot1
-percentages1
+frequenza_RGB_2013_class <- freq(RGB_2013_class) #Funzione che calcola la frequenza dei valori delle classi
+pixel_RGB_2013_class = ncell(RGB_2013_class) # funzione che vede il totale dei pixel dell'immagine
+percentuale_RGB_2013_class = frequenza_RGB_2013_class * 100 /  pixel_RGB_2013_class #calcolo percentuale
+percentuale_RGB_2013_class
 # percentuale Mare: 29.84090
 # percentuale Vegetazione: 28.92892
 # percentuale Mare Profondo: 18.46407
 # percentuale Suolo: 22.76611
 
-frequencies2 <- freq(RGB_2023_class)
-tot2 = ncell(RGB_2023_class)
-percentages2 = frequencies2 * 100 /  tot2
-percentages2
+frequenza_RGB_2023_class <- freq(RGB_2023_class)
+pixel_RGB_2023_class = ncell(RGB_2023_class)
+percentuale_RGB_2023_class = frequenza_RGB_2023_class * 100 /  pixel_RGB_2023_class
+percentuale_RGB_2023_class
 # percentuale Mare: 16.28425
 # percentuale Vegetazione: 40.85569
 # percentuale Mare Profondo: 32.26851 
 # percentuale Suolo: 10.59156
 
 
-# Costruire un dataframe
-cover <- c("Mare","Vegetazione","Suolo")
-percent_2013 <- c(48.3, 28.93, 22.77) 
-percent_2023 <- c(48.55, 40.85, 10.59) 
-
-percentages <- data.frame(cover, percent_2013, percent_2023)
+cover <- c("Mare","Vegetazione","Suolo") #Assegno valori per costruire un dataframe
+percentuale_2013 <- c(48.3, 28.93, 22.77) 
+percentuale_2023 <- c(48.55, 40.85, 10.59) 
+percentages <- data.frame(cover, percentuale_2013, percentuale_2023) #Costruisco un dataframe, ossia memorizzo i dati in forma tabellare
 percentages
 
-# Disegniamoli!
-ggplot(percentages, aes(x=cover, y=percent_2013, color=cover)) + geom_bar(stat="identity", fill="white")
-ggplot(percentages, aes(x=cover, y=percent_2023, color=cover)) + geom_bar(stat="identity", fill="white")
-p1 <- ggplot(percentages, aes(x=cover, y=percent_2013, color=cover)) + geom_bar(stat="identity", fill="white")
-p2 <- ggplot(percentages, aes(x=cover, y=percent_2023, color=cover)) + geom_bar(stat="identity", fill="white")
+ggplot(percentages, aes(x=cover, y=percentuale_2013, color=cover)) + geom_bar(stat="identity", fill="white") #Creo i grafici 
+ggplot(percentages, aes(x=cover, y=percentuale_2023, color=cover)) + geom_bar(stat="identity", fill="white")
+p1 <- ggplot(percentages, aes(x=cover, y=percentuale_2013, color=cover)) + geom_bar(stat="identity", fill="white")
+p2 <- ggplot(percentages, aes(x=cover, y=percentuale_2023, color=cover)) + geom_bar(stat="identity", fill="white")
 p1+p2
 
-
-# stessi limiti espressi in percentuali!
-p1 <- ggplot(percentages, aes(x=cover, y=percent_2013, color=cover)) + geom_bar(stat="identity", fill="white") + ylim(c(0,100))
-p2 <- ggplot(percentages, aes(x=cover, y=percent_2023, color=cover)) + geom_bar(stat="identity", fill="white") + ylim(c(0,100))
+# stessi dati ma espressi in percentuale!
+p1 <- ggplot(percentages, aes(x=cover, y=percentuale_2013, color=cover)) + geom_bar(stat="identity", fill="white") + ylim(c(0,100))
+p2 <- ggplot(percentages, aes(x=cover, y=percentuale_2023, color=cover)) + geom_bar(stat="identity", fill="white") + ylim(c(0,100))
 p1+p2
 
 dev.off()
