@@ -182,10 +182,10 @@ my_legend_scaled <- magick::image_scale(
   "2000x" # Specifica la larghezza desiderata dell'immagine ridimensionata in pixel, mantenendo l'aspetto originale.
 )
 p <- magick::image_composite(  
-  magick::image_scale(forest_img, "4000x"), # Ridimensiona l'immagine principale.
+  magick::image_scale(forest_img, "5000x"), # Ridimensiona l'immagine principale.
   my_legend_scaled, 
   gravity = "southeast", 
-  offset = "-220-700"
+  offset = "-150-400"
 ) 
 magick::image_write(p, "final-map.png")
 
