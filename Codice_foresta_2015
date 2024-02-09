@@ -172,7 +172,7 @@ rayshader::render_highquality(
 
 
 # 8. PER UNIRE TUTTO INSIEME
-png("my_legend.pgn") 
+png("my_legend.png") 
 par(family = "mono") 
 plot( 
   NULL, 
