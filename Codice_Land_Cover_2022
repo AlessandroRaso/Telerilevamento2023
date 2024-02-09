@@ -83,7 +83,8 @@ for(raster in raster_files){
       raster,
       "_Calabria",
       ".tif"
-    )
+    ),
+  overwrite = TRUE
   )
 }
 
