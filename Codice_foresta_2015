@@ -108,36 +108,36 @@ elev_lambert <- elev |>
 elmat <- rayshader::raster_to_matrix(  
   elev_lambert 
 ) 
-h <- nrow(elev_lambert) * 0.5 
-w <- ncol(elev_lambert) * 0.5 
+h <- nrow(elev_lambert) 
+w <- ncol(elev_lambert) 
 elmat |> 
   rayshader::height_shade( 
     texture = colorRampPalette( 
-      "white"
+      c("white"
     )(512)  
   ) |> 
-    rayshader::add_overlay( 
+  rayshader::add_overlay( 
     img,  
     alphalayer = 0.9,  
-        alphacolor = "white"
+    alphacolor = "white"
   ) |> 
   
-rayshader::add_shadow( 
-        rayshader::lamb_shade(
-            elmat,
-            zscale = 50,        
-            sunaltitude = 90,    
-            sunangle = 315,     
-        ), max_darken = 0.25
-    ) |>
+  rayshader::add_shadow( 
+    rayshader::lamb_shade(
+      elmat,
+      zscale = 50,        
+      sunaltitude = 90,    
+      sunangle = 315,     
+    ), max_darken = 0.25
+  ) |>
     
-    rayshader::add_shadow( 
-        rayshader::texture_shade(
-            elmat,
-            detail = 0.95,              
-            brightness = 90,           
-            contrast = 80,
-        ), max_darken = 0.1
+  rayshader::add_shadow( 
+      rayshader::texture_shade(
+          elmat,
+          detail = 0.95,              
+          brightness = 90,           
+          contrast = 80,
+      ), max_darken = 0.1
     ) |>
 rayshader::plot_3d( 
     elmat, 
@@ -210,12 +210,12 @@ my_legend <- magick::image_read("my_legend.png")
 my_legend_scaled <- magick::image_scale( 
   magick::image_background( 
     my_legend, "none" 
-  ), 2000   
+  ), "2000x"   
 ) 
-magick::image_transparent("white") 
+ 
 p <- magick::image_composite(  
   magick::image_scale( 
-    forest_img, "x5000"  
+    forest_img, "5000x"  
   ), 
   my_legend_scaled, 
   gravity = "southeast", 
