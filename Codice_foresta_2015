@@ -66,7 +66,7 @@ regions_forest_type <- terra::crop(
   mask = TRUE  
 ) |> 
 terra::project(crs) 
-
+terra::plot(regions_forest_type)
 
 # 5 PER DEFINIRE I COLORI E SUCCESSVAMENTE CREARE L’IMMAGINE RGB
 cols <- c(  
