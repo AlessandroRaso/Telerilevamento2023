@@ -44,6 +44,7 @@ land_cover_vrt <- terra::vrt(r_list, "Calabria_2017_land_cover_vrt.vrt", overwri
 # 6 ESTRARRE I COLORI ORIGINALI DAL RASTER E ASSEGNARLI AL NUOVO RASTER
 ras <- terra::rast(raster_files[[1]])
 raster_color_table <- do.call(data.frame, terra::coltab(ras))
+head(raster_color_table)
 hex_code <- ggtern::rgb2hex(r = raster_color_table[,2], g = raster_color_table[,3], b = raster_color_table[,4])
 
 
