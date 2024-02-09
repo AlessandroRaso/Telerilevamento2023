@@ -78,7 +78,7 @@ dev.off()
 
 # 10. RENDERIZZARE L’OGGETTO
 filename <- "3d_land_cover_Calabria_2017-dark.png"
-rayshader::render_highquality(filename = filename, preview = T, light = F, environment_light = "D:/Progetto Tesi/air_museum_playground_4k.hdr", intensity_env = 1, rotate_env = 90, interactive = F, parallel = T, width = w * 1.5, height = h * 1.5)
+rayshader::render_highquality(filename = filename, preview = T, light = F, environment_light = "D:/Calabria_2017/air_museum_playground_4k.hdr", intensity_env = 1, rotate_env = 90, interactive = F, parallel = T, width = w * 1.5, height = h * 1.5)
 
 
 # 11. UNIRE TUTTO INSIEME
