@@ -32,7 +32,7 @@ levelplot(differenza, col.regions = custom_palette(6), main = "Differenze tra 20
 
 # Salva il plot in formato PNG con orientamento verticale
 png("differenze_2017_2022.png", width = 600, height = 800)
-levelplot(differenza, col.regions = custom_palette(100), main = "Differenze tra 2017 e 2022", margin = FALSE, colorkey = FALSE)
+levelplot(differenza, col.regions = custom_palette(6), main = "Differenze tra 2017 e 2022", margin = FALSE, colorkey = FALSE)
 dev.off()
 
 # Definisci i colori per la legenda
