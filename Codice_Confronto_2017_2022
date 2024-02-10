@@ -1,0 +1,92 @@
+# Per analizzare più approfonditamente le differenze tra le due Land Cover della Calabria
+
+# Carica il pacchetto raster
+library(raster)
+library(rasterVis)
+library(magick)
+
+setwd("D:/Calabria_2017_2022") # Imposta la directory di lavoro
+
+# Caricamento dei dati raster per il 2017
+raster_file_2017 <- "land_cover_Calabria_2017.tiff"
+raster_2017 <- terra::rast(raster_file_2017)
+
+# Caricamento dei dati raster per il 2022
+raster_file_2022 <- "land_cover_Calabria_2022.tiff"
+raster_2022 <- terra::rast(raster_file_2022)
+
+# Converti i raster in formato compatibile con il pacchetto "raster"
+raster_2017_raster <- raster::raster(raster_2017)
+raster_2022_raster <- raster::raster(raster_2022)
+
+# Calcola la differenza tra le due immagini raster
+differenza <- raster_2022_raster - raster_2017_raster
+
+# Definisci la scala di colori personalizzata
+colors <- c("#419bdf", "#397d49", "#7a87c6", "#e49635", "#a8ebff", "#CCCCCC")
+names(colors) <- c("Acqua", "Alberi", "Raccolti", "Area edificata", "Pascolo", "Invariato")
+custom_palette <- colorRampPalette(colors)
+
+# Visualizza la differenza sovrapposta con la scala di colori personalizzata
+levelplot(differenza, col.regions = custom_palette(6), main = "Differenze tra 2017 e 2022", margin = FALSE, colorkey = FALSE)
+
+# Salva il plot in formato PNG con orientamento verticale
+png("differenze_2017_2022.png", width = 600, height = 800)
+levelplot(differenza, col.regions = custom_palette(100), main = "Differenze tra 2017 e 2022", margin = FALSE, colorkey = FALSE)
+dev.off()
+
+# Definisci i colori per la legenda
+cols <- c(
+  "#419bdf", "#397d49", "#7a87c6",
+  "#e49635", "#c4281b", "#a59b8f",
+  "#a8ebff", "#616161", "#e3e2c3"
+)
+legend_name <- "land_cover_legend.png"
+png(legend_name)
+par(family = "mono")
+plot(
+  NULL,
+  xaxt = "n",
+  yaxt = "n",
+  bty = "n",
+  ylab = "",
+  xlab = "",
+  xlim = 0:1,
+  ylim = 0:1,
+  xaxs = "i",
+  yaxs = "i"
+)
+legend(
+  "center",
+  legend = c(
+    "Acqua",
+    "Alberi",
+    "Raccolti",
+    "Area edificata",
+    "Pascolo",
+    "Invariato"
+  ),
+  pch = 15,
+  cex = 2,
+  pt.cex = 1,
+  bty = "n",
+  col = c(cols[c(1:2, 4:5, 9)], "#9999CC"),
+  fill = c(cols[c(1:2, 4:5, 9)], "#9999CC"),  
+  border = "grey20"
+)
+dev.off()
+
+legend <- image_read("land_cover_legend.png")	# Carica la legenda
+
+plot_diff <- image_read("differenze_2017_2022.png")	# Carica il plot delle differenze
+
+legend_resized <- image_scale(legend, "70%")	# Ridimensiona la legenda della metà
+
+legend_trimmed <- image_trim(legend_resized, fuzz = 10) # Taglia il bordo della legenda
+
+# Sovrapponi il plot alla legenda
+combined <- image_composite(plot_diff, legend_trimmed, gravity = "south", offset = "+160+80")
+
+# Salva l'immagine sovrapposta
+image_write(combined, "combined_plot_and_legend.png")
+
