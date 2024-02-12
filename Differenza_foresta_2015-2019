@@ -1,0 +1,58 @@
+# Carica il pacchetto raster
+library(magick)
+# Impostare la directory di lavoro
+setwd("D:/Calabria_foresta_2015_2019")
+# Caricare le immagini
+img_2015 <- magick::image_read("Calabria_2015-forest-image.png")
+img_2019 <- magick::image_read("Calabria_2019-forest-image.png")
+# Assicurarsi che le immagini abbiano le stesse dimensioni
+img_2019 <- magick::image_scale(img_2019, paste(magick::image_info(img_2015)$width, "x", magick::image_info(img_2015)$height, sep=""))
+# Calcolare la differenza
+img_diff <- magick::image_composite(img_2015, img_2019, operator = "difference")
+# Visualizzare e salvare nella directory la differenza
+magick::image_write(img_diff, "Calabria_forest_diff_2015_2019.png")
+
+
+
+# Creazione di un'immagine vuota per la legenda
+legend_name <- "land_cover_legend.png"
+png(legend_name)
+par(family = "mono")
+plot(
+  NULL,
+  xaxt = "n",
+  yaxt = "n",
+  bty = "n",
+  ylab = "",
+  xlab = "",
+  xlim = 0:1,
+  ylim = 0:1,
+  xaxs = "i",
+  yaxs = "i"
+)
+legend(
+  "center",
+  legend = c(
+    "Diminuzione foglia larga decidua", 
+    "Diminuzione aghifoglia sempreverde",
+    "Invariato"
+  ),
+  pch = 15,
+  cex = 1.4,
+  pt.cex = 1,
+  bty = "n",
+  col = c("#ff8c00", "#7cd8ff", "#000000"),
+  fill = c("#ff8c00", "#7cd8ff", "#000000"), 
+  border = "grey20"
+)
+dev.off()
+
+# Unire tutto insieme
+legend <- image_read("land_cover_legend.png")	# Caricare la legenda
+plot_diff <- image_read("Calabria_forest_diff_2015_2019.png")	# Caricare il plot delle differenze
+legend_resized <- image_scale(legend, "270%")	# Ridimensionare la legenda
+legend_trimmed <- image_trim(legend_resized, fuzz = 10) # Tagliare il bordo della legenda
+# Sovrapporre il plot alla legenda
+combined <- image_composite(plot_diff, legend_trimmed, gravity = "south", offset = "+270+60")
+# Salvare l'immagine sovrapposta
+image_write(combined, "combined_plot_and_legend.png")
