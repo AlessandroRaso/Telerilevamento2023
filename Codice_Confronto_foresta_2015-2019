@@ -12,8 +12,6 @@ img_diff <- magick::image_composite(img_2015, img_2019, operator = "difference")
 # Visualizzare e salvare nella directory la differenza
 magick::image_write(img_diff, "Calabria_forest_diff_2015_2019.png")
 
-
-
 # Creazione di un'immagine vuota per la legenda
 legend_name <- "land_cover_legend.png"
 png(legend_name)
